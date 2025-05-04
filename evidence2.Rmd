@@ -4,6 +4,7 @@ output:
   pdf_document: default
   html_document: default
 date: "2025-05-02"
+author: "Alejandro Benítez Bravo A01712835"
 ---
 
 ```{r setup, include=FALSE}
@@ -98,6 +99,8 @@ ggplot(
 
 ```
 
+En esta gráfica se pueden observar la comparación entre todas las bases de cada variante por país. Realizando un análisis simplemente de esta gráfica nos podemos dar cuenta de que las variantes son muy parecidas. Si bien esta gráfica no nos permite ver exáctamente cuáles son las diferencias, se puede apreciar que las variantes son mayormente similares, lo cual puede revelar el hecho de que fue una variante la que se propagó por todo el mundo, y fue en cada lugar donde fue mutando pero desde la misma base. 
+
 ```{r}
 # Read FASTAs Again but in a Different Format (idealy, this shouldn't be the case but we couldn't find how to do it)
 countries <- c("usa", "china", "india", "france", "germany", "brazil", "south_korea", "japan", "italy", "uk")
@@ -158,6 +161,10 @@ plot(phylotree, cex = 0.6, main = "NJ Tree")
 
 ```
 
+Este es nuestro árbol filogenético simple. Este árbol está hecho por medio de `ape`. Es interesante observar este árbol, ya que nos revela que las variantes más lejanas y las que más mutaron fueron las de China e India. Esto puede ser debido a el acomodo y orden en el que se crea el árbol filogenético, pero también podría ser porque las variantes que obtuvimos para China e India fueron cuándo el virus ya había mutado bastante. 
+
+
+
 ```{r}
 # Convert our DNA Distribution and Plot it in a Table
 adj_matrix <- as.matrix(dna_distro)
@@ -168,6 +175,8 @@ table.paint(
   clabel.col = 0.25
 )
 ```
+
+Aquí podemos ver la matriz de adyacencia. Naturalmente la diagonal es toda blanca ya que se comparan las mismas variantes. Podemos observar que las variantes de China e India son muy parecidas entre sí. Las variantes de Korea del Sur, Japón, Italia, y el Reino unido también son bastante similares. A nivel de continentes, no parece haber un patrón. Japon y Korea del Sur tiene variantes muy diferentes a China e India, países que se encuentran en Asia, pero como lo vimos anteriormente muy similares a países de Europa. 
 
 ```{r}
 p <- ggtree(phylotree) %<+% mortality_data +
@@ -182,3 +191,9 @@ p <- ggtree(phylotree) %<+% mortality_data +
 
 print(p)
 ```
+
+Para mi aportación extra decidí hacer dos cosas: analizar la mortalidad de las variantes para ver si las mutaciones afectaban esto, y usar ggtree para generar el árbol filogenético (parcialmente porque batallé mucho con ape y me resultó más fácil usar ggtree). 
+
+Para la mortalidad no se hizo un análisis tan profundo. Simplemente se buscaron la cantidad de casos y las muertes en cada país, y se asumió que esos eran los datos para las variantes de cada país. Con ggtree simplemente se hizo un árbol con colores para demostrar el nivel de mortalidad, además de que se añadió el porcentaje de mortalidad. 
+
+Esto nos arroja resultados muy interesantes. Se puede observar que las variantes con menos mutaciones tiene porcentajes ligeramente más bajos, o colores más fríos. Sin embargo esto no es del todo cierto, ya que Estados Unidos muestra una mortalidad considerable. Sin embargo los demás parecer ser medianamente bajos. Y podemos observar que los países con más mutaciones, como Brazil e India, tienen una alta mortalidad. Sin embargo, también se puede observar que Francia y China tiene muy baja mortalidad comparandolo con los demás. 
