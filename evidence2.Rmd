@@ -1,6 +1,8 @@
 ---
 title: "evidence2"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 date: "2025-05-02"
 ---
 
@@ -17,6 +19,7 @@ Load all of the libraries that we'll be using for this project
 #  BiocManager::install("msa")
 #  BiocManager::install("DECIPHER")
 #  BiocManager::install("phangorn")
+#  BiocManager::install("treeio")
 #}
 
 # Library loading
@@ -35,7 +38,8 @@ library(ggplot2)
 library(ggthemes)
 library(ggrepel)
 library(msa)
-
+library(ggtree)
+library(treeio)
 ```
 
 Performing sequence loading
@@ -101,8 +105,8 @@ countries <- c("usa", "china", "india", "france", "germany", "brazil", "south_ko
 # Place Sequences into a DNAStringSet
 all_sequences <- DNAStringSet()
 for (country in countries) {
-  file_path <- paste0("./sequences/", country, ".fasta")
-  seq <- readDNAStringSet(file_path)
+  seq <- readDNAStringSet(paste0("./sequences/", country, ".fasta"))
+  names(seq) <- country  # Explicitly name each sequence
   all_sequences <- c(all_sequences, seq)
 }
 
@@ -151,9 +155,10 @@ boots <- boot.phylo(
 myPal <- colorRampPalette(c("red","yellow","green","blue"))
 mortalityPalette <- colorRampPalette(c("red", "blue"))
 plot(phylotree, cex = 0.6, main = "NJ Tree")
-nodelabels(boots, bg = "white", cex = 0.6, col=transp(num2col(boots, col.pal=myPal),.7))  # Red labels for visibility
-tiplabels(frame = "none", pch = 20, col = transp(num2col(mortality_data$Rates, col.pal=mortalityPalette)))
 
+```
+
+```{r}
 # Convert our DNA Distribution and Plot it in a Table
 adj_matrix <- as.matrix(dna_distro)
 table.paint(
@@ -162,4 +167,18 @@ table.paint(
   clabel.row = 0.25,
   clabel.col = 0.25
 )
+```
+
+```{r}
+p <- ggtree(phylotree) %<+% mortality_data +
+  geom_tiplab(aes(label = paste0(Country, "\n", Mortality, "%")), 
+             size = 3, hjust = -0.1) +
+  geom_tippoint(aes(color = Mortality), size = 5) +
+  scale_color_gradient(low = "blue", high = "red", na.value = "gray") +
+  xlim(0, max(dna_distro) * 1.3) +
+  labs(title = "Phylogenetic Tree with Mortality Rates",
+      color = "Mortality (%)") +
+  theme_tree2()
+
+print(p)
 ```
